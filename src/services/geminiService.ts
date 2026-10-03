@@ -132,7 +132,7 @@ export async function executePromptWithGemini(prompt: string): Promise<string> {
  * Generates an opening Viva question tailored specifically to the active subject
  */
 export async function generateInitialVivaQuestion(activeSubject: string): Promise<string> {
-  const prompt = `You are a strict university examiner for a Master of Computer Applications (MCA) program. The current subject is "${activeSubject}".
+  const prompt = `You are a strict university examiner for an advanced Computer Science & Engineering program. The current subject is "${activeSubject}".
 Pose an initial, rigorous opening oral viva voce question to the student candidate on a foundational yet critical architectural or conceptual topic in "${activeSubject}".
 Keep your response concise and professional (2-3 sentences max).
 Include a brief, formal welcome ("Welcome to your ${activeSubject} Practical Viva Voce.") followed directly by your opening technical question.`;
@@ -167,7 +167,7 @@ export async function evaluateStudentVivaAnswer(
   activeSubject: string
 ): Promise<{ examinerReply: string; evaluation: VivaEvaluation }> {
   // Required strict system prompt
-  const strictSystemPrompt = `You are a strict university examiner for a Master of Computer Applications (MCA) program. The current subject is ${activeSubject}. You must dynamically evaluate the user's exact input. If the user says 'I don't know' or asks for the answer, you MUST provide the complete, correct technical answer clearly and comprehensively before asking the next follow-up question. Never praise an incorrect or blank answer. Ensure absolute strictness in subject domains (e.g., if testing Operating Systems, do not mix in Python or general programming questions; if testing Java, focus on core Java language concepts as requested by the user, rather than general OOP theory).`;
+  const strictSystemPrompt = `You are a strict university examiner for an advanced Computer Science & Engineering program. The current subject is ${activeSubject}. You must dynamically evaluate the user's exact input. If the user says 'I don't know' or asks for the answer, you MUST provide the complete, correct technical answer clearly and comprehensively before asking the next follow-up question. Never praise an incorrect or blank answer. Ensure absolute strictness in subject domains (e.g., if testing Operating Systems, do not mix in Python or general programming questions; if testing Java, focus on core Java language concepts as requested by the user, rather than general OOP theory).`;
 
   const prompt = `${strictSystemPrompt}
 
@@ -229,7 +229,7 @@ Only return the JSON object. All scores must be numbers between 1.0 and 10.0. If
         weaknesses: Array.isArray(parsed.weaknesses) && parsed.weaknesses.length > 0
           ? parsed.weaknesses
           : ['Needs review of core technical definitions'],
-        examinerCritique: parsed.examinerCritique || 'Candidate evaluated under strict university MCA grading criteria.',
+        examinerCritique: parsed.examinerCritique || 'Candidate evaluated under strict university Computer Science grading criteria.',
         suggestedRevision: parsed.suggestedRevision || 'Review core definitions and architectural trade-offs.',
       },
     };
@@ -327,7 +327,7 @@ export async function generateTopicTechnicalBreakdown(
   topicName: string,
   subject: string
 ): Promise<string> {
-  const prompt = `You are a distinguished university professor for an MCA (Master of Computer Applications) program.
+  const prompt = `You are a distinguished university professor for a Computer Science & Engineering program.
 Provide an exhaustive, high-level technical breakdown for the syllabus topic: "${topicName}" in the subject "${subject}".
 
 Structure your explanation strictly with the following sections:

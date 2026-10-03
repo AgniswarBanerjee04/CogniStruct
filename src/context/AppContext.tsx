@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import type {
   UserProfile,
   SubjectModule,
@@ -13,9 +13,16 @@ import { hasValidApiKey, getActiveApiKey, saveRuntimeApiKey } from '../services/
 
 interface AppContextType {
   isAuthenticated: boolean;
-  login: (email: string, rollNumber: string, name?: string) => void;
+  login: (
+    email: string,
+    rollNumber: string,
+    name?: string,
+    rememberMe?: boolean,
+    customProfile?: Partial<UserProfile>
+  ) => void;
+  loginAsDemo: () => void;
   logout: () => void;
-  user: UserProfile;
+  user: UserProfile | null;
   activeModule: SubjectModule;
   activeSubject: string;
   setActiveModuleId: (id: ModuleId) => void;
@@ -43,59 +50,65 @@ const initialModules: SubjectModule[] = [
   {
     id: 'os',
     name: 'Operating Systems',
-    code: 'CS-MCA-201',
+    code: 'CS-201',
     semester: 'Semester 2',
     iconName: 'Cpu',
     description: 'Kernel architectures, concurrency, memory paging, and deadlock resolution.',
     totalTopics: 18,
     completedTopics: 14,
     readinessScore: 84,
-    accentColor: '#06B6D4',
+    accentColor: '#38BDF8', // Sky Blue
   },
   {
     id: 'rdbms',
     name: 'Database Management Systems (RDBMS)',
-    code: 'CS-MCA-202',
+    code: 'CS-202',
     semester: 'Semester 2',
     iconName: 'Database',
     description: 'Relational algebra, ACID transactions, 3NF/BCNF normalization, and indexing trees.',
     totalTopics: 16,
     completedTopics: 12,
     readinessScore: 78,
-    accentColor: '#6366F1',
+    accentColor: '#818CF8', // Soft Indigo
   },
   {
     id: 'dsa',
     name: 'Python & Data Structures',
-    code: 'CS-MCA-203',
+    code: 'CS-203',
     semester: 'Semester 2',
     iconName: 'Code2',
     description: 'Advanced asymptotic analysis, self-balancing trees, graph algorithms, and DP.',
     totalTopics: 20,
     completedTopics: 16,
     readinessScore: 88,
-    accentColor: '#10B981',
+    accentColor: '#34D399', // Mint Green
   },
   {
     id: 'cybersec',
     name: 'Cyber Security',
-    code: 'CS-MCA-204',
+    code: 'CS-204',
     semester: 'Semester 2',
     iconName: 'ShieldCheck',
     description: 'Cryptographic primitives, PKI, network packet inspection, and threat modeling.',
     totalTopics: 14,
     completedTopics: 9,
     readinessScore: 72,
-    accentColor: '#F59E0B',
+    accentColor: '#FBBF24', // Soft Amber
   },
 ];
 
-const initialUser: UserProfile = {
-  name: 'Agniswar Banerjee',
-  email: 'agniswar.banerjee@msit.edu.in',
-  rollNumber: 'MCA-2024-042',
-  program: 'Master of Computer Applications (MCA)',
-  institution: 'Meghnad Saha Institute of Technology',
+const createDefaultUserProfile = (
+  name: string,
+  email: string,
+  rollNumber: string,
+  program?: string,
+  institution?: string
+): UserProfile => ({
+  name,
+  email,
+  rollNumber,
+  program: program || 'Computer Science & Engineering',
+  institution: institution || 'Apex Institute of Technology',
   avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
   activeModules: initialModules,
   stats: {
@@ -105,6 +118,56 @@ const initialUser: UserProfile = {
     totalSyllabusNodes: 16,
     academicStreakDays: 12,
   },
+});
+
+const getStoredSession = (): {
+  email: string;
+  rollNumber: string;
+  name: string;
+  program?: string;
+  institution?: string;
+} | null => {
+  try {
+    // 1. Check persistent localStorage first
+    if (localStorage.getItem('cognistruct_session_active') === 'true') {
+      const email = localStorage.getItem('cognistruct_user_email');
+      const rollNumber = localStorage.getItem('cognistruct_user_roll');
+      const name = localStorage.getItem('cognistruct_user_name');
+      const program = localStorage.getItem('cognistruct_user_program') || undefined;
+      const institution = localStorage.getItem('cognistruct_user_institution') || undefined;
+      if (email && rollNumber) {
+        return {
+          email,
+          rollNumber,
+          name: name || 'Student Candidate',
+          program,
+          institution,
+        };
+      }
+    }
+
+    // 2. Check tab-scoped sessionStorage
+    if (sessionStorage.getItem('cognistruct_session_active') === 'true') {
+      const email = sessionStorage.getItem('cognistruct_user_email');
+      const rollNumber = sessionStorage.getItem('cognistruct_user_roll');
+      const name = sessionStorage.getItem('cognistruct_user_name');
+      const program = sessionStorage.getItem('cognistruct_user_program') || undefined;
+      const institution = sessionStorage.getItem('cognistruct_user_institution') || undefined;
+      if (email && rollNumber) {
+        return {
+          email,
+          rollNumber,
+          name: name || 'Student Candidate',
+          program,
+          institution,
+        };
+      }
+    }
+  } catch (e) {
+    console.error('Error reading session storage:', e);
+  }
+
+  return null;
 };
 
 const initialPrompts: MasterPrompt[] = [
@@ -116,11 +179,11 @@ const initialPrompts: MasterPrompt[] = [
     createdAt: 'Today, 08:30 AM',
     blocks: {
       role: 'Distinguished Systems Architect & University OS Professor specializing in Linux kernel concurrency.',
-      context: 'MCA 2nd Semester candidate at Meghnad Saha Institute of Technology preparing for the end-sem practical viva on process synchronization.',
+      context: 'Computer Science candidate at Apex Institute of Technology preparing for the practical viva on process synchronization.',
       task: "Deconstruct Peterson's algorithm step-by-step, mathematically prove mutual exclusion in sequential consistency, then explain why modern speculative out-of-order x86/ARM processors break it without hardware memory fences.",
       format: '1. Formal State Transition Table\n2. C pseudo-code with atomic fences\n3. High-probability viva defense questions with exact model answers.',
     },
-    compiledPrompt: `### ROLE:\nDistinguished Systems Architect & University OS Professor specializing in Linux kernel concurrency.\n\n### CONTEXT:\nMCA 2nd Semester candidate at Meghnad Saha Institute of Technology preparing for the end-sem practical viva on process synchronization.\n\n### TASK:\nDeconstruct Peterson's algorithm step-by-step, mathematically prove mutual exclusion in sequential consistency, then explain why modern speculative out-of-order x86/ARM processors break it without hardware memory fences.\n\n### FORMAT:\n1. Formal State Transition Table\n2. C pseudo-code with atomic fences\n3. High-probability viva defense questions with exact model answers.`,
+    compiledPrompt: `### ROLE:\nDistinguished Systems Architect & University OS Professor specializing in Linux kernel concurrency.\n\n### CONTEXT:\nComputer Science candidate at Apex Institute of Technology preparing for the practical viva on process synchronization.\n\n### TASK:\nDeconstruct Peterson's algorithm step-by-step, mathematically prove mutual exclusion in sequential consistency, then explain why modern speculative out-of-order x86/ARM processors break it without hardware memory fences.\n\n### FORMAT:\n1. Formal State Transition Table\n2. C pseudo-code with atomic fences\n3. High-probability viva defense questions with exact model answers.`,
   },
   {
     id: 'prompt-2',
@@ -293,21 +356,23 @@ const initialParsedSyllabus: ParsedSyllabusTopic[] = [
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Authentication Gateway state
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return localStorage.getItem('cognistruct_session_active') === 'true';
+  // Clear Initial State: Initializes user as null and unauthenticated unless a valid session exists in storage
+  const [user, setUser] = useState<UserProfile | null>(() => {
+    const stored = getStoredSession();
+    if (!stored) {
+      return null;
+    }
+    return createDefaultUserProfile(
+      stored.name,
+      stored.email,
+      stored.rollNumber,
+      stored.program,
+      stored.institution
+    );
   });
 
-  const [user, setUser] = useState<UserProfile>(() => {
-    const savedName = localStorage.getItem('cognistruct_user_name');
-    const savedEmail = localStorage.getItem('cognistruct_user_email');
-    const savedRoll = localStorage.getItem('cognistruct_user_roll');
-    return {
-      ...initialUser,
-      name: savedName || initialUser.name,
-      email: savedEmail || initialUser.email,
-      rollNumber: savedRoll || initialUser.rollNumber,
-    };
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return getStoredSession() !== null;
   });
 
   const [activeModule, setActiveModule] = useState<SubjectModule>(initialModules[0]);
@@ -330,34 +395,93 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     },
   ]);
 
-  useEffect(() => {
-    setHasCustomKey(hasValidApiKey());
-  }, [apiKey]);
+  const login = (
+    email: string,
+    rollNumber: string,
+    name?: string,
+    rememberMe: boolean = false,
+    customProfile?: Partial<UserProfile>
+  ) => {
+    const resolvedName = name?.trim() || 'Student Candidate';
+    const targetStorage = rememberMe ? localStorage : sessionStorage;
+    const alternateStorage = rememberMe ? sessionStorage : localStorage;
 
-  const login = (email: string, rollNumber: string, name?: string) => {
-    const resolvedName = name?.trim() || initialUser.name;
-    localStorage.setItem('cognistruct_session_active', 'true');
-    localStorage.setItem('cognistruct_user_email', email);
-    localStorage.setItem('cognistruct_user_roll', rollNumber);
-    localStorage.setItem('cognistruct_user_name', resolvedName);
+    // Purge opposing storage to guarantee clean session isolation
+    try {
+      alternateStorage.removeItem('cognistruct_session_active');
+      alternateStorage.removeItem('cognistruct_user_email');
+      alternateStorage.removeItem('cognistruct_user_roll');
+      alternateStorage.removeItem('cognistruct_user_name');
+      alternateStorage.removeItem('cognistruct_user_program');
+      alternateStorage.removeItem('cognistruct_user_institution');
 
-    setUser((prev) => ({
-      ...prev,
-      name: resolvedName,
+      // Persist to target storage
+      targetStorage.setItem('cognistruct_session_active', 'true');
+      targetStorage.setItem('cognistruct_user_email', email);
+      targetStorage.setItem('cognistruct_user_roll', rollNumber);
+      targetStorage.setItem('cognistruct_user_name', resolvedName);
+      if (customProfile?.program) {
+        targetStorage.setItem('cognistruct_user_program', customProfile.program);
+      }
+      if (customProfile?.institution) {
+        targetStorage.setItem('cognistruct_user_institution', customProfile.institution);
+      }
+    } catch (e) {
+      console.error('Storage write error:', e);
+    }
+
+    const newProfile = createDefaultUserProfile(
+      resolvedName,
       email,
       rollNumber,
-    }));
+      customProfile?.program,
+      customProfile?.institution
+    );
+
+    setUser(newProfile);
     setIsAuthenticated(true);
     setCurrentTab('overview');
   };
 
+  // Recruiter Demo Mode: populates a mock profile using entirely generic data
+  const loginAsDemo = () => {
+    login(
+      'demo.student@apextech.edu',
+      'CS-2026-001',
+      'Demo Student',
+      false, // tab-scoped sessionStorage by default
+      {
+        program: 'Computer Science & Engineering',
+        institution: 'Apex Institute of Technology',
+      }
+    );
+  };
+
   const logout = () => {
-    localStorage.removeItem('cognistruct_session_active');
+    try {
+      localStorage.removeItem('cognistruct_session_active');
+      localStorage.removeItem('cognistruct_user_email');
+      localStorage.removeItem('cognistruct_user_roll');
+      localStorage.removeItem('cognistruct_user_name');
+      localStorage.removeItem('cognistruct_user_program');
+      localStorage.removeItem('cognistruct_user_institution');
+
+      sessionStorage.removeItem('cognistruct_session_active');
+      sessionStorage.removeItem('cognistruct_user_email');
+      sessionStorage.removeItem('cognistruct_user_roll');
+      sessionStorage.removeItem('cognistruct_user_name');
+      sessionStorage.removeItem('cognistruct_user_program');
+      sessionStorage.removeItem('cognistruct_user_institution');
+    } catch (e) {
+      console.error('Logout error:', e);
+    }
+
+    setUser(null);
     setIsAuthenticated(false);
   };
 
   const setActiveModuleId = (id: ModuleId) => {
-    const found = user.activeModules.find((m) => m.id === id);
+    const found = user?.activeModules.find((m) => m.id === id) || initialModules.find((m) => m.id === id);
     if (found) {
       setActiveModule(found);
       resetVivaChat(found.name);
@@ -366,13 +490,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const addMasterPrompt = (newPrompt: MasterPrompt) => {
     setMasterPrompts((prev) => [newPrompt, ...prev]);
-    setUser((prev) => ({
-      ...prev,
-      stats: {
-        ...prev.stats,
-        masterPromptsCount: prev.stats.masterPromptsCount + 1,
-      },
-    }));
+    setUser((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        stats: {
+          ...prev.stats,
+          masterPromptsCount: prev.stats.masterPromptsCount + 1,
+        },
+      };
+    });
   };
 
   const addVivaMessage = (message: VivaMessage) => {
@@ -404,14 +531,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const completedCount = updated.filter((n) => n.status === 'completed').length;
       const readiness = Math.round((completedCount / updated.length) * 100);
 
-      setUser((prevUser) => ({
-        ...prevUser,
-        stats: {
-          ...prevUser.stats,
-          completedSyllabusNodes: completedCount,
-          vivaReadinessIndex: Math.min(100, Math.max(45, readiness + 10)),
-        },
-      }));
+      setUser((prevUser) => {
+        if (!prevUser) return null;
+        return {
+          ...prevUser,
+          stats: {
+            ...prevUser.stats,
+            completedSyllabusNodes: completedCount,
+            vivaReadinessIndex: Math.min(100, Math.max(45, readiness + 10)),
+          },
+        };
+      });
 
       return updated;
     });
@@ -434,6 +564,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       value={{
         isAuthenticated,
         login,
+        loginAsDemo,
         logout,
         user,
         activeModule,

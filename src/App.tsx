@@ -10,9 +10,9 @@ import { SyllabusUpload } from './pages/SyllabusUpload';
 import { AuthPage } from './pages/AuthPage';
 
 const AppContent: React.FC = () => {
-  const { currentTab, isAuthenticated } = useApp();
+  const { currentTab, isAuthenticated, user } = useApp();
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !user) {
     return <AuthPage />;
   }
 

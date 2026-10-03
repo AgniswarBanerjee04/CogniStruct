@@ -11,13 +11,13 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#0B0914] text-white flex flex-col font-sans selection:bg-[#FF007F]/30 selection:text-[#00E5FF]">
-      {/* Background ambient cyberpunk lighting */}
+    <div className="min-h-screen bg-[#0F172A] text-slate-100 flex flex-col font-sans selection:bg-indigo-500/30 selection:text-white">
+      {/* Background Calm Ambient Atmosphere */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute -top-[15%] -left-[10%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-br from-[#FF007F]/15 via-[#6366F1]/10 to-transparent blur-[140px]" />
-        <div className="absolute top-[35%] -right-[15%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-bl from-[#00E5FF]/15 via-[#39FF14]/5 to-transparent blur-[140px]" />
-        <div className="absolute -bottom-[20%] left-[20%] w-[45vw] h-[45vw] rounded-full bg-gradient-to-tr from-[#6366F1]/10 via-[#00E5FF]/10 to-transparent blur-[140px]" />
-        <div className="absolute inset-0 bg-grid-pattern opacity-40" />
+        <div className="absolute -top-[15%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-indigo-500/[0.05] blur-[140px]" />
+        <div className="absolute top-[30%] -right-[15%] w-[45vw] h-[45vw] rounded-full bg-sky-500/[0.04] blur-[140px]" />
+        <div className="absolute -bottom-[20%] left-[25%] w-[40vw] h-[40vw] rounded-full bg-indigo-600/[0.04] blur-[140px]" />
+        <div className="absolute inset-0 bg-grid-pattern opacity-30" />
       </div>
 
       {/* Top Navbar */}

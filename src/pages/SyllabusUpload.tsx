@@ -40,7 +40,7 @@ export const SyllabusUpload: React.FC = () => {
   // Drag and drop state
   const [isDragging, setIsDragging] = useState(false);
 
-  const sampleSyllabusText = `UNIVERSITY SYLLABUS: MCA SEMESTER 2 - OPERATING SYSTEMS & CONCURRENCY
+  const sampleSyllabusText = `UNIVERSITY SYLLABUS: COMPUTER SCIENCE - OPERATING SYSTEMS & CONCURRENCY
 MODULE 1: Kernel Architecture & Process Management
 - Process Control Block (PCB), Context Switching Mechanics, State Transitions
 - CPU Scheduling: FCFS, Shortest Job First, Multi-Level Feedback Queues
@@ -150,13 +150,11 @@ MODULE 5: Storage & File Systems
   return (
     <div className="max-w-7xl mx-auto w-full space-y-8 pb-16">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-[#170E33] via-[#120B24] to-[#0A0714] border border-white/10 shadow-2xl relative overflow-hidden">
-        <div className="absolute top-0 right-1/4 w-80 h-80 bg-[#00E5FF]/10 rounded-full blur-3xl pointer-events-none" />
-
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 sm:p-8 rounded-3xl bg-slate-800/40 backdrop-blur-md border border-slate-700/60 shadow-xl relative overflow-hidden">
         <div className="space-y-2 relative z-10">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-[#00E5FF]/15 text-[#00E5FF] border border-[#00E5FF]/30 font-bold shadow-sm shadow-[#00E5FF]/20">
-              AI Curriculum Intelligence
+            <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-medium">
+              Curriculum Intelligence
             </span>
             <span className="text-xs text-slate-300 font-medium">Gemini 1.5 Flash Parser</span>
           </div>
@@ -169,13 +167,14 @@ MODULE 5: Storage & File Systems
         </div>
 
         <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ y: -1 }}
+          whileTap={{ y: 0 }}
+          transition={{ duration: 0.2, ease: 'easeInOut' }}
           onClick={() => setSyllabusText(sampleSyllabusText)}
-          className="px-4 py-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 hover:text-white text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer relative z-10"
+          className="px-4 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 hover:text-white text-xs font-semibold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer relative z-10 shadow-sm"
         >
-          <FileText className="w-3.5 h-3.5 text-[#00E5FF]" />
-          <span>Load MSIT MCA Sample</span>
+          <FileText className="w-3.5 h-3.5 text-[#38BDF8]" />
+          <span>Load Sample CS Syllabus</span>
         </motion.button>
       </div>
 
@@ -186,7 +185,7 @@ MODULE 5: Storage & File Systems
             <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
             <span>{errorMessage}</span>
           </div>
-          <button onClick={() => setErrorMessage(null)} className="underline text-slate-400">
+          <button onClick={() => setErrorMessage(null)} className="underline text-slate-400 cursor-pointer">
             Dismiss
           </button>
         </div>
@@ -204,21 +203,21 @@ MODULE 5: Storage & File Systems
             onDrop={handleDrop}
             className={`relative p-8 rounded-3xl border-2 border-dashed transition-all flex flex-col items-center justify-center text-center group cursor-pointer ${
               isDragging
-                ? 'border-[#00E5FF] bg-[#00E5FF]/15'
-                : 'border-white/15 hover:border-[#00E5FF]/50 glass-panel'
+                ? 'border-indigo-400 bg-indigo-500/10'
+                : 'border-slate-700/80 hover:border-slate-600 bg-slate-800/30'
             }`}
           >
-            <div className="p-4 rounded-2xl bg-white/5 text-[#00E5FF] border border-white/10 mb-3 group-hover:scale-110 transition-transform">
-              <Upload className="w-7 h-7 text-[#00E5FF]" />
+            <div className="p-4 rounded-2xl bg-slate-800 text-[#818CF8] border border-slate-700 mb-3 group-hover:scale-105 transition-transform">
+              <Upload className="w-7 h-7 text-[#818CF8]" />
             </div>
             <h4 className="text-sm font-bold text-white mb-1">
               Drag & Drop Syllabus Document or Click to Browse
             </h4>
             <p className="text-xs text-slate-400 max-w-sm mb-4">
-              Supports <span className="font-mono text-[#00E5FF]">.txt</span>, <span className="font-mono text-[#00E5FF]">.md</span>, <span className="font-mono text-[#00E5FF]">.json</span> files or paste directly below.
+              Supports <span className="font-mono text-slate-300">.txt</span>, <span className="font-mono text-slate-300">.md</span>, <span className="font-mono text-slate-300">.json</span> files or paste directly below.
             </p>
 
-            <label className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#00E5FF] to-[#6366F1] text-black font-extrabold text-xs cursor-pointer shadow-md hover:shadow-[#00E5FF]/30 transition-all">
+            <label className="px-5 py-2.5 rounded-full bg-[#818CF8] hover:bg-[#6366F1] active:bg-[#4F46E5] text-white font-semibold text-xs cursor-pointer shadow-md transition-all">
               <span>Select Document</span>
               <input
                 type="file"
@@ -231,7 +230,7 @@ MODULE 5: Storage & File Systems
 
           <div className="space-y-2">
             <div className="flex justify-between items-center text-xs text-slate-400">
-              <label className="font-mono uppercase font-bold text-[#00E5FF]">Or Paste Raw Syllabus Content:</label>
+              <label className="font-mono uppercase font-semibold text-[#818CF8]">Or Paste Raw Syllabus Content:</label>
               <span className="font-mono">{syllabusText.length} characters</span>
             </div>
             <textarea
@@ -239,16 +238,17 @@ MODULE 5: Storage & File Systems
               value={syllabusText}
               onChange={(e) => setSyllabusText(e.target.value)}
               placeholder="Paste course modules, units, chapter objectives, or semester syllabus text..."
-              className="w-full p-4 rounded-2xl bg-black/60 border border-white/10 text-xs sm:text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-[#00E5FF] focus:ring-1 focus:ring-[#00E5FF] font-sans leading-relaxed"
+              className="w-full p-4 rounded-2xl bg-slate-900/60 border border-slate-700 text-xs sm:text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-[#818CF8] focus:ring-1 focus:ring-[#818CF8] font-sans leading-relaxed transition-colors"
             />
           </div>
 
           <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ y: -1 }}
+            whileTap={{ y: 0 }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
             onClick={handleAnalyzeSyllabus}
             disabled={isAnalyzing || !syllabusText.trim()}
-            className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#00E5FF] via-[#6366F1] to-[#FF007F] hover:from-[#00E5FF] hover:to-[#FF007F] text-black font-extrabold text-sm transition-all shadow-[0_0_20px_rgba(0,229,255,0.4)] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-3.5 rounded-2xl bg-[#818CF8] hover:bg-[#6366F1] active:bg-[#4F46E5] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
           >
             <Sparkles className={`w-4 h-4 ${isAnalyzing ? 'animate-spin' : ''}`} />
             <span>{isAnalyzing ? 'Gemini Analyzing & Prioritizing Topics...' : 'Analyze & Generate Roadmap'}</span>
@@ -256,25 +256,25 @@ MODULE 5: Storage & File Systems
         </div>
 
         {/* Info & Extraction Specs */}
-        <div className="p-5 rounded-3xl glass-panel space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-white/10">
-            <Layers className="w-4 h-4 text-[#00E5FF]" />
+        <div className="p-5 rounded-3xl bg-slate-800/40 backdrop-blur-md border border-slate-700/60 space-y-4 shadow-md">
+          <div className="flex items-center gap-2 pb-3 border-b border-slate-700/60">
+            <Layers className="w-4 h-4 text-[#818CF8]" />
             <h3 className="text-sm font-bold text-white">Parser Intelligence</h3>
           </div>
 
           <div className="space-y-3 text-xs text-slate-300">
-            <div className="p-3.5 rounded-2xl bg-black/50 border border-white/5 space-y-1">
-              <span className="font-bold text-[#00E5FF] flex items-center gap-1.5">
-                <Flame className="w-3.5 h-3.5 text-[#00E5FF]" /> High-Weightage Flagging
+            <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-700/50 space-y-1">
+              <span className="font-semibold text-[#818CF8] flex items-center gap-1.5">
+                <Flame className="w-3.5 h-3.5 text-[#818CF8]" /> High-Weightage Flagging
               </span>
               <p className="text-[11px] text-slate-400 leading-relaxed">
-                Automatically isolates core viva concepts like Deadlock Handling in OS, BCNF in RDBMS, and POSIX Concurrency with glowing Cyber Cyan highlights.
+                Automatically isolates core viva concepts like Deadlock Handling in OS, BCNF in RDBMS, and POSIX Concurrency with clean priority tags.
               </p>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-black/50 border border-white/5 space-y-1">
-              <span className="font-bold text-[#FF007F] flex items-center gap-1.5">
-                <BookOpen className="w-3.5 h-3.5 text-[#FF007F]" /> 1-Click Deep Explanations
+            <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-700/50 space-y-1">
+              <span className="font-semibold text-[#38BDF8] flex items-center gap-1.5">
+                <BookOpen className="w-3.5 h-3.5 text-[#38BDF8]" /> 1-Click Deep Explanations
               </span>
               <p className="text-[11px] text-slate-400 leading-relaxed">
                 Click "Generate Explanation" on any topic to synthesize an academic technical breakdown complete with mathematical proofs and examiner traps.
@@ -290,7 +290,7 @@ MODULE 5: Storage & File Systems
           <div>
             <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
               <span>Parsed Syllabus Roadmap</span>
-              <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-[#00E5FF]/15 text-[#00E5FF] border border-[#00E5FF]/30 font-bold">
+              <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-medium">
                 {parsedSyllabusTopics.length} Core Topics
               </span>
             </h2>
@@ -306,14 +306,14 @@ MODULE 5: Storage & File Systems
             return (
               <motion.div
                 key={topic.id}
-                whileHover={{ scale: 1.015 }}
-                initial={{ opacity: 0, y: 10 }}
+                whileHover={{ y: -1 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2, delay: index * 0.04 }}
-                className={`p-4 sm:p-5 rounded-3xl glass-panel transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+                transition={{ duration: 0.2, delay: index * 0.03, ease: 'easeInOut' }}
+                className={`p-4 sm:p-5 rounded-3xl bg-slate-800/40 backdrop-blur-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 border ${
                   isHighPriority
-                    ? 'border-[#00E5FF]/60 shadow-[0_0_20px_rgba(0,229,255,0.25)] neon-border-cyan'
-                    : 'border-white/10 hover:border-white/20'
+                    ? 'border-indigo-500/40 shadow-sm'
+                    : 'border-slate-700/60 hover:border-slate-600'
                 }`}
               >
                 <div className="space-y-2 flex-1">
@@ -322,8 +322,8 @@ MODULE 5: Storage & File Systems
                       onClick={() => toggleParsedTopicCompletion(topic.id)}
                       className={`w-5 h-5 rounded-md flex items-center justify-center text-xs transition-colors cursor-pointer ${
                         topic.isCompleted
-                          ? 'bg-[#39FF14] text-black font-bold'
-                          : 'border border-white/20 hover:border-[#00E5FF] text-transparent'
+                          ? 'bg-[#34D399] text-slate-950 font-bold'
+                          : 'border border-slate-700 hover:border-slate-500 text-transparent'
                       }`}
                       title={topic.isCompleted ? 'Mark incomplete' : 'Mark complete'}
                     >
@@ -332,25 +332,25 @@ MODULE 5: Storage & File Systems
 
                     <span className="text-[10px] font-mono text-slate-400 font-semibold">Node #{index + 1}</span>
 
-                    {/* Glowing Cyber Cyan Badge for High Priority */}
+                    {/* Priority Badge */}
                     {isHighPriority ? (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#00E5FF]/20 text-[#00E5FF] border border-[#00E5FF] shadow-[0_0_12px_rgba(0,229,255,0.5)] font-extrabold animate-pulse">
-                        <Flame className="w-3 h-3 text-[#00E5FF]" /> High-Priority / High-Weightage
+                      <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 font-semibold">
+                        <Flame className="w-3 h-3 text-amber-400" /> High-Priority / High-Weightage
                       </span>
                     ) : (
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/5 text-slate-400 font-semibold">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-medium border border-slate-700">
                         {topic.priorityLevel}
                       </span>
                     )}
                   </div>
 
                   <h3
-                    className={`text-sm sm:text-base font-extrabold transition-colors ${
+                    className={`text-sm sm:text-base font-bold transition-colors ${
                       topic.isCompleted
                         ? 'text-slate-400 line-through'
                         : isHighPriority
-                        ? 'text-[#00E5FF]'
-                        : 'text-white'
+                        ? 'text-white'
+                        : 'text-slate-100'
                     }`}
                   >
                     {topic.topicName}
@@ -361,7 +361,7 @@ MODULE 5: Storage & File Systems
                       {topic.keySubtopics.map((sub, i) => (
                         <span
                           key={i}
-                          className="text-[10px] px-2.5 py-0.5 rounded-lg bg-black/50 border border-white/10 text-slate-300 font-mono"
+                          className="text-[10px] px-2.5 py-0.5 rounded-lg bg-slate-900/60 border border-slate-700/50 text-slate-300 font-mono"
                         >
                           {sub}
                         </span>
@@ -373,23 +373,25 @@ MODULE 5: Storage & File Systems
                 {/* Action Triggers */}
                 <div className="flex items-center gap-2 shrink-0 self-end md:self-center">
                   <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ y: -1 }}
+                    whileTap={{ y: 0 }}
+                    transition={{ duration: 0.2, ease: 'easeInOut' }}
                     onClick={() => handleOpenExplanation(topic)}
-                    className="px-4 py-2 rounded-2xl bg-[#00E5FF]/15 hover:bg-[#00E5FF]/25 text-[#00E5FF] border border-[#00E5FF]/40 text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm shadow-[#00E5FF]/20 cursor-pointer"
+                    className="px-4 py-2 rounded-2xl bg-slate-800 hover:bg-slate-750 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-[#00E5FF]" />
+                    <Sparkles className="w-3.5 h-3.5 text-[#818CF8]" />
                     <span>Generate Explanation</span>
                   </motion.button>
 
                   <motion.button
-                    whileHover={{ scale: 1.08 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ y: -1 }}
+                    whileTap={{ y: 0 }}
+                    transition={{ duration: 0.2, ease: 'easeInOut' }}
                     onClick={() => setCurrentTab('viva')}
-                    className="p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                    className="p-2.5 rounded-2xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer shadow-sm"
                     title="Launch Viva for this subject"
                   >
-                    <ArrowRight className="w-4 h-4 text-[#00E5FF]" />
+                    <ArrowRight className="w-4 h-4 text-[#818CF8]" />
                   </motion.button>
                 </div>
               </motion.div>
@@ -401,41 +403,42 @@ MODULE 5: Storage & File Systems
       {/* AI Explanation Modal */}
       <AnimatePresence>
         {selectedTopicForExplanation && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className="relative w-full max-w-3xl max-h-[85vh] bg-[#120D25] border border-[#00E5FF]/40 rounded-3xl shadow-[0_0_50px_rgba(0,229,255,0.25)] overflow-hidden flex flex-col p-6"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 12 }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
+              className="relative w-full max-w-3xl max-h-[85vh] bg-[#1E293B] border border-slate-700 rounded-3xl shadow-2xl overflow-hidden flex flex-col p-6"
             >
-              <div className="flex items-start justify-between pb-4 border-b border-white/10">
+              <div className="flex items-start justify-between pb-4 border-b border-slate-700">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-2xl bg-[#00E5FF]/15 border border-[#00E5FF]/30 text-[#00E5FF]">
-                    <Sparkles className="w-5 h-5 text-[#00E5FF]" />
+                  <div className="p-2.5 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-[#818CF8]">
+                    <Sparkles className="w-5 h-5 text-[#818CF8]" />
                   </div>
                   <div>
-                    <span className="text-[10px] font-mono text-[#00E5FF] uppercase font-bold tracking-wider">
-                      AI Academic Technical Breakdown
+                    <span className="text-[10px] font-mono text-[#818CF8] uppercase font-semibold tracking-wider">
+                      Academic Technical Breakdown
                     </span>
-                    <h3 className="text-lg font-extrabold text-white">
+                    <h3 className="text-lg font-bold text-white">
                       {selectedTopicForExplanation.topicName}
                     </h3>
                   </div>
                 </div>
                 <button
                   onClick={() => setSelectedTopicForExplanation(null)}
-                  className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 cursor-pointer"
+                  className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-4 my-2 rounded-2xl bg-black/60 border border-white/5 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans whitespace-pre-wrap">
+              <div className="flex-1 overflow-y-auto p-4 my-2 rounded-2xl bg-slate-900/80 border border-slate-700/60 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans whitespace-pre-wrap">
                 {isGeneratingExplanation ? (
                   <div className="py-16 text-center space-y-3">
-                    <Sparkles className="w-8 h-8 text-[#00E5FF] animate-spin mx-auto" />
-                    <p className="text-xs font-mono text-[#00E5FF]">
-                      Gemini is generating an exhaustive university breakdown for "{selectedTopicForExplanation.topicName}"...
+                    <Sparkles className="w-8 h-8 text-[#818CF8] animate-spin mx-auto" />
+                    <p className="text-xs font-mono text-slate-300">
+                      Generating university breakdown for "{selectedTopicForExplanation.topicName}"...
                     </p>
                   </div>
                 ) : (
@@ -443,17 +446,16 @@ MODULE 5: Storage & File Systems
                 )}
               </div>
 
-              <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs">
+              <div className="pt-3 border-t border-slate-700 flex items-center justify-between text-xs">
                 <span className="text-slate-400 font-mono">
-                  Syllabus Weightage: <strong className="text-[#00E5FF]">{selectedTopicForExplanation.priorityLevel}</strong>
+                  Syllabus Weightage: <strong className="text-slate-200">{selectedTopicForExplanation.priorityLevel}</strong>
                 </span>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
+                <button
                   onClick={() => setSelectedTopicForExplanation(null)}
-                  className="px-5 py-2 rounded-full bg-[#00E5FF] text-black font-extrabold hover:bg-white transition-colors cursor-pointer"
+                  className="px-5 py-2 rounded-full bg-[#818CF8] hover:bg-[#6366F1] active:bg-[#4F46E5] text-white font-semibold transition-colors cursor-pointer"
                 >
                   Close Breakdown
-                </motion.button>
+                </button>
               </div>
             </motion.div>
           </div>
