@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Key, Sparkles, CheckCircle2, AlertCircle, X, ExternalLink, Shield } from 'lucide-react';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { useApp } from '../context/AppContext';
 
 export const ApiKeyModal: React.FC = () => {
@@ -33,43 +34,21 @@ export const ApiKeyModal: React.FC = () => {
     setErrorMessage('');
 
     try {
-      const candidateModels = ['gemini-1.5-flash-latest', 'gemini-1.5-flash', 'gemini-pro'];
-      let succeeded = false;
-      let lastErrMsg = '';
+      const genAI = new GoogleGenerativeAI(inputValue.trim());
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const result = await model.generateContent('Respond with the single word: "READY"');
+      const response = await result.response;
+      const text = response.text();
 
-      for (const model of candidateModels) {
-        const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${inputValue.trim()}`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: 'Respond with the single word: "READY"' }] }],
-            }),
-          }
-        );
-
-        if (res.ok) {
-          succeeded = true;
-          break;
-        } else {
-          const error = await res.json().catch(() => ({}));
-          lastErrMsg = error?.error?.message || `HTTP ${res.status}`;
-          if (res.status === 404) {
-            continue;
-          }
-        }
-      }
-
-      if (succeeded) {
+      if (text) {
         setTestStatus('success');
       } else {
         setTestStatus('failed');
-        setErrorMessage(lastErrMsg || 'Invalid API key or model quota exceeded.');
+        setErrorMessage('No response received from Gemini model.');
       }
-    } catch {
+    } catch (err: any) {
       setTestStatus('failed');
-      setErrorMessage('Network error while testing connection to Google AI Studio.');
+      setErrorMessage(err?.message || 'Invalid API key or model error.');
     }
   };
 
