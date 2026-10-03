@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --color-bg-base: #0B0914;
+    --color-bg-subtle: #130E26;
+    --color-surface: rgba(255, 255, 255, 0.04);
+    --color-surface-hover: rgba(255, 255, 255, 0.08);
+    --color-border: rgba(255, 255, 255, 0.10);
+    --color-border-bright: rgba(0, 229, 255, 0.4);
+    --color-cyan: #00E5FF;
+    --color-magenta: #FF007F;
+    --color-lime: #39FF14;
+  }
+
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background: radial-gradient(circle at 50% 0%, #1A1035 0%, #0B0914 70%, #06050B 100%);
+    background-color: #0B0914;
+    color: #FFFFFF;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* Custom cyber-academic grid and glowing animations */
+.bg-grid-pattern {
+  background-image: radial-gradient(rgba(0, 229, 255, 0.08) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.cyber-glow-cyan {
+  box-shadow: 0 0 25px -4px rgba(0, 229, 255, 0.4), 0 0 10px -2px rgba(0, 229, 255, 0.3);
+}
+
+.cyber-glow-magenta {
+  box-shadow: 0 0 25px -4px rgba(255, 0, 127, 0.45), 0 0 12px -2px rgba(255, 0, 127, 0.3);
+}
+
+.cyber-glow-lime {
+  box-shadow: 0 0 25px -4px rgba(57, 255, 20, 0.45), 0 0 12px -2px rgba(57, 255, 20, 0.3);
+}
+
+.neon-border-cyan {
+  position: relative;
+}
+.neon-border-cyan::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(135deg, #00E5FF, #FF007F);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0.45;
+  filter: blur(1.5px);
+}
+
+.neon-pulse-card {
+  box-shadow: 0 0 20px -4px rgba(0, 229, 255, 0.35);
+  transition: box-shadow 0.3s ease;
+}
+.neon-pulse-card:hover {
+  box-shadow: 0 0 28px -2px rgba(0, 229, 255, 0.5);
+}
+
+/* Glassmorphism utility - optimized for lightweight GPU compositing */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.glass-panel:hover {
+  background: rgba(255, 255, 255, 0.055);
+  border-color: rgba(0, 229, 255, 0.3);
+}
+
+/* Custom scrollbars with cyber accent */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0B0914;
+}
+::-webkit-scrollbar-thumb {
+  background: #251B45;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00E5FF;
+}
