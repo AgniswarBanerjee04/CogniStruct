@@ -446,9 +446,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Recruiter Demo Mode: populates a mock profile using entirely generic data
   const loginAsDemo = () => {
     login(
-      'demo.student@apextech.edu',
-      'CS-2026-001',
-      'Demo Student',
+      'demo@university.edu',
+      'CS-2026-DEMO',
+      'Demo User',
       false, // tab-scoped sessionStorage by default
       {
         program: 'Computer Science & Engineering',

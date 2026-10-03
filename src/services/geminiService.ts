@@ -1,3 +1,4 @@
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { VivaEvaluation, ParsedSyllabusTopic } from '../types';
 
 // Retrieve active API key either from environment or local storage override
@@ -62,7 +63,8 @@ function extractJsonFromText<T>(text: string): T {
 }
 
 /**
- * Direct Gemini API call helper with multi-model fallback (gemini-3.8-flash -> gemini-flash-latest -> gemini-2.5-flash)
+ * Direct Gemini API call helper using GoogleGenerativeAI SDK
+ * Uses universally supported model 'gemini-1.5-flash-latest' with automatic fallback cascade.
  */
 async function callGeminiApi(prompt: string, jsonMode: boolean = false): Promise<string> {
   const apiKey = getActiveApiKey();
@@ -71,51 +73,77 @@ async function callGeminiApi(prompt: string, jsonMode: boolean = false): Promise
     throw new Error('MISSING_API_KEY');
   }
 
-  // Model cascade: try newest stable models supported by Google Gemini API in 2026
-  const candidateModels = ['gemini-3.8-flash', 'gemini-flash-latest', 'gemini-2.5-flash', 'gemini-1.5-flash'];
+  const genAI = new GoogleGenerativeAI(apiKey);
+
+  // Model cascade: try universally supported 'gemini-1.5-flash-latest' first, followed by fallbacks
+  const candidateModels = [
+    'gemini-1.5-flash-latest',
+    'gemini-1.5-flash',
+    'gemini-2.0-flash',
+    'gemini-pro',
+  ];
+
   let lastErrorMsg = '';
 
-  for (const model of candidateModels) {
+  for (const modelName of candidateModels) {
     try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [{ text: prompt }],
-              },
-            ],
-            generationConfig: {
-              temperature: 0.35,
-              maxOutputTokens: 2500,
-              ...(jsonMode ? { responseMimeType: 'application/json' } : {}),
-            },
-          }),
-        }
-      );
+      const model = genAI.getGenerativeModel({
+        model: modelName,
+        generationConfig: {
+          temperature: 0.35,
+          maxOutputTokens: 2500,
+          ...(jsonMode ? { responseMimeType: 'application/json' } : {}),
+        },
+      });
 
-      if (response.ok) {
-        const data = await response.json();
-        const candidate = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (candidate) {
-          return candidate;
-        }
-      } else {
-        const errorBody = await response.json().catch(() => ({}));
-        lastErrorMsg = errorBody?.error?.message || `HTTP ${response.status}: ${response.statusText}`;
-        // If 404 model not found, try the next model in cascade
-        if (response.status === 404) {
-          continue;
-        }
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+      if (text) {
+        return text;
       }
     } catch (err: any) {
-      lastErrorMsg = err?.message || 'Network error';
+      lastErrorMsg = err?.message || 'Model execution error';
+      // If 404 or model not found, try the next candidate model
+      if (
+        lastErrorMsg.includes('404') ||
+        lastErrorMsg.toLowerCase().includes('not found') ||
+        lastErrorMsg.toLowerCase().includes('is not supported')
+      ) {
+        continue;
+      }
+      // If quota issue
+      if (lastErrorMsg.includes('429') || lastErrorMsg.toLowerCase().includes('quota')) {
+        throw new Error(`Gemini API Quota Exceeded: ${lastErrorMsg}`);
+      }
     }
+  }
+
+  // Direct fetch fallback with gemini-1.5-flash-latest in case SDK hits environment-specific issues
+  try {
+    const fetchResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.35,
+            maxOutputTokens: 2500,
+            ...(jsonMode ? { responseMimeType: 'application/json' } : {}),
+          },
+        }),
+      }
+    );
+
+    if (fetchResponse.ok) {
+      const data = await fetchResponse.json();
+      const candidate = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (candidate) return candidate;
+    }
+  } catch {
+    // Continue to error throw below
   }
 
   throw new Error(`Gemini API Error: ${lastErrorMsg || 'All candidate models failed'}`);

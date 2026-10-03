@@ -15,7 +15,7 @@ import {
 import { useApp } from '../context/AppContext';
 
 export const AuthPage: React.FC = () => {
-  const { login, loginAsDemo } = useApp();
+  const { login } = useApp();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,8 +35,11 @@ export const AuthPage: React.FC = () => {
     }, 400);
   };
 
-  const handleRecruiterDemo = () => {
-    loginAsDemo();
+  const handleGuestDemo = () => {
+    setFullName('Demo User');
+    setEmail('demo@university.edu');
+    setRollNumber('CS-2026-DEMO');
+    setPassword('demoPassword123');
   };
 
   return (
@@ -176,18 +179,18 @@ export const AuthPage: React.FC = () => {
           </div>
         </form>
 
-        {/* Recruiter Demo Mode Action */}
+        {/* Guest / Recruiter Demo Mode Action */}
         <div className="mt-5 pt-5 border-t border-slate-700/60 text-center space-y-2">
           <p className="text-[11px] text-slate-400">
             Evaluating CogniStruct for hiring or academic review?
           </p>
           <button
             type="button"
-            onClick={handleRecruiterDemo}
+            onClick={handleGuestDemo}
             className="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700/80 active:bg-slate-700 text-xs font-semibold text-slate-200 hover:text-white border border-slate-700 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
           >
             <Sparkles className="w-3.5 h-3.5 text-[#38BDF8]" />
-            <span>View Demo Dashboard</span>
+            <span>Guest / Recruiter Demo</span>
           </button>
         </div>
 

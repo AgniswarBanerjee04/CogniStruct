@@ -33,23 +33,39 @@ export const ApiKeyModal: React.FC = () => {
     setErrorMessage('');
 
     try {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${inputValue.trim()}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: 'Respond with the single word: "READY"' }] }],
-          }),
-        }
-      );
+      const candidateModels = ['gemini-1.5-flash-latest', 'gemini-1.5-flash', 'gemini-pro'];
+      let succeeded = false;
+      let lastErrMsg = '';
 
-      if (res.ok) {
+      for (const model of candidateModels) {
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${inputValue.trim()}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: 'Respond with the single word: "READY"' }] }],
+            }),
+          }
+        );
+
+        if (res.ok) {
+          succeeded = true;
+          break;
+        } else {
+          const error = await res.json().catch(() => ({}));
+          lastErrMsg = error?.error?.message || `HTTP ${res.status}`;
+          if (res.status === 404) {
+            continue;
+          }
+        }
+      }
+
+      if (succeeded) {
         setTestStatus('success');
       } else {
-        const error = await res.json().catch(() => ({}));
         setTestStatus('failed');
-        setErrorMessage(error?.error?.message || 'Invalid API key or model quota exceeded.');
+        setErrorMessage(lastErrMsg || 'Invalid API key or model quota exceeded.');
       }
     } catch {
       setTestStatus('failed');
